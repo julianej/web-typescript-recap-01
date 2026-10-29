@@ -160,3 +160,11 @@ Open the local URL printed by `http-server` in your browser to test the applicat
 3. Start the local web server.
 4. Edit your `.ts` files and save changes.
 5. TypeScript recompiles automatically; refresh the browser to see the changes.
+
+
+<br>
+
+### TASK 02 - Book Listing
+- check index.html for list
+- add an id <tbody id="book-list">
+- <h2 id="book-count">0 Books displayed</h2>
