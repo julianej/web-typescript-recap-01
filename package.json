@@ -1,11 +1,14 @@
 {
   "name": "web-typescript-recap-01",
   "version": "1.0.0",
+  "type": "module",
   "description": "Starter files for recap project 1. The three HTML pages and the stylesheet are ready: `index.html` lists the books, `detail.html` shows a single book, and `favorite.html` shows the favorites. The sample rows and the sample book show what the pages look like with data. Your TypeScript replaces them with data from `bookmonkey-api`.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "watch": "tsc --watch"
   },
+
   "repository": {
     "type": "git",
     "url": "git+https://github.com/julianej/web-typescript-recap-01.git"
@@ -13,7 +16,6 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
   "bugs": {
     "url": "https://github.com/julianej/web-typescript-recap-01/issues"
   },
