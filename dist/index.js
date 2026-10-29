@@ -66,12 +66,19 @@ function renderBooks() {
         const titleCell = document.createElement("td");
         titleCell.textContent = book.title;
         const isbnCell = document.createElement("td");
+        // Create titleCell, isbnCell, authorCell, publisherCell here.
+        const detailCell = document.createElement("td");
+        const detailLink = document.createElement("a");
+        detailLink.href = `detail.html?isbn=${encodeURIComponent(book.isbn)}`;
+        detailLink.textContent = "Detail";
+        detailLink.classList.add("button");
+        detailCell.append(detailLink);
         isbnCell.textContent = book.isbn;
         const authorCell = document.createElement("td");
         authorCell.textContent = book.author;
         const publisherCell = document.createElement("td");
         publisherCell.textContent = book.publisher;
-        row.append(titleCell, isbnCell, authorCell, publisherCell);
+        row.append(titleCell, isbnCell, authorCell, publisherCell, detailCell);
         bookList.append(row);
     });
 }

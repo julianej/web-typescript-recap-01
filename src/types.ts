@@ -3,15 +3,19 @@
 // and a type guard isBook
 
 export interface Book {
-  title: string;
   isbn: string;
+  title: string;
+  subtitle?: string;
+  abstract?: string;
   author: string;
   publisher: string;
+  numPages?: number;
+  cover?: string;
 }
 
 // type guard with typeof
 export function isBook(value: unknown): value is Book {
-    
+
   if (typeof value !== "object" || value === null) {
     return false;
   }
