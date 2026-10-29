@@ -47,7 +47,9 @@
    <main class="container">
     <h2 id="book-count">Books displayed</h2>
     <p id="error-message" role="alert" hidden></p>
+    <!-- ROWS -->
     <section class="row filter-search">
+       <!-- Search -->
       <form action="#" class="column">
         <label for="search">
           Search by ISBN, Title, Author or Publisher
@@ -56,6 +58,7 @@
       </form>
 
       <form action="#" class="column column-33">
+       <!-- Publisher -->
         <label for="by-publisher">Filter by Publisher</label>
         <select id="by-publisher">
           <option value="-">All publishers</option>
@@ -76,7 +79,7 @@
               <th>&nbsp;</th>
             </tr>
           </thead>
-
+            <!-- Book List -->
           <tbody id="book-list"></tbody>
         </table>
       </div>
