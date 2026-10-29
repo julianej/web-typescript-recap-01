@@ -13,7 +13,10 @@ bookmonkey-api: REST API serving as the data source for the books
 Git & GitHub: Version control, feature branches, and pull requests
 
 ### Getting Started
-Clone the repository
-Run npm install
-Run npx tsc to compile to dist/
-Open index.html in your browser
+01 Clone the repository
+02 Run npm init -y  (package.json) listed under devDependencies in your package.json
+03 Run npm install --save -dev typescript (adds TypeScript to devDependencies)
+04 Run npm install (Installs the required npm packages into node_modules.)
+05 Run npx tsc --init (tsconfic.json)
+06 Run node dist/index.js to compile to dist/
+07 Open index.html in your browser
