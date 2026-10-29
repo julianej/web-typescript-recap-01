@@ -2,18 +2,29 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 console.log("Index Page loaded");
 const books_js_1 = require("./books.js");
-// DYNAMIC BOOK LIST UPDATE
-try {
-    // fetch
-    const books = await (0, books_js_1.fetchBooks)();
-    console.log("Books fetched:", books);
-    // Update heading
-    const bookCount = document.querySelector("#book-count");
-    if (bookCount) {
-        bookCount.textContent = `${books.length} Books displayed`;
-    }
-}
-catch (error) {
-    console.error("Could not load books:", error);
+// SEARCH //lib DOM selectors 
+const bookSearch = document.querySelector("#search");
+const publisherFilter = document.querySelector("#by-publisher");
+const bookList = document.querySelector("#book-list");
+const bookCount = document.querySelector("#book-count");
+// create a new ARRAY of filtered Books from Interface
+let allBooks = [];
+// DYNAMIC BOOK LIST UPDATE empty
+function renderBooks() {
+    if (!bookList || !bookCount)
+        return;
+    // 1. Get the current filter values
+    const searchTerm = bookSearch?.value.trim().toLowerCase() ?? "";
+    const selectedPublisher = publisherFilter?.value ?? "-";
+    // 2. Define filteredBooks match
+    const filteredBooks = allBooks.filter((book) => {
+        const matchesSearch = book.title.toLowerCase().includes(searchTerm) ||
+            book.isbn.toLowerCase().includes(searchTerm) ||
+            book.author.toLowerCase().includes(searchTerm) ||
+            book.publisher.toLowerCase().includes(searchTerm);
+        const matchesPublisher = selectedPublisher === "-" || book.publisher === selectedPublisher;
+        return matchesSearch && matchesPublisher;
+    });
+    bookCount.textContent = `${filteredBooks.length} Books displayed`;
 }
 //# sourceMappingURL=index.js.map
