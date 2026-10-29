@@ -6,94 +6,128 @@ console.log("Detail Page loaded");
 const bookDetail = document.querySelector<HTMLElement>("#book-detail");
 const detailError = document.querySelector<HTMLParagraphElement>("#detail-error");
 
-// ASYNC INIT 
+const backButton = document.querySelector<HTMLButtonElement>("#back-button");
+
+backButton?.addEventListener("click", () => {
+  if (window.history.length > 1) {
+    window.history.back();
+  } else {
+    window.location.href = "./index.html";
+  }
+});
+
+// ASYNC INIT
 async function initDetail(): Promise<void> {
-
-// Query-Parameter: ?isbn=…
-// Beispiel: /detail.html?isbn=9780747532699
-
+  // Read ISBN from query parameter
   const params = new URLSearchParams(window.location.search);
   const isbn = params.get("isbn");
+
   console.log("ISBN from URL:", isbn);
 
-
-// Pfadparameter: /books/:isbn
-// Beispiel: /books/9780747532699
-// Passt gut zu REST-APIs und dynamischen Routen.
-// const pathParts = window.location.pathname.split("/");
-// const isbn = pathParts[2];
-
-
-// ERROR ISBN
+  // ERROR: MISSING ISBN
   if (!isbn) {
     showError("No ISBN was provided in the URL.");
     return;
   }
 
-// API ISBN ROUTE
   try {
+    // FETCH BOOK FROM API
     const response = await fetch(
       `http://localhost:4730/books/${encodeURIComponent(isbn)}`
     );
 
-// MESSAGE 404 - NOT FOUND
+    // ERROR: API RESPONSE
     if (!response.ok) {
-        if (response.status === 404) {
-            throw new Error(`No book found with ISBN: ${isbn}`);
-        }
-     throw new Error(`API error: ${response.status}`);
+      if (response.status === 404) {
+        throw new Error(`No book found with ISBN: ${isbn}`);
+      }
+
+      throw new Error(`API error: ${response.status}`);
     }
 
-
-// JSON RESPONSE
+    // JSON RESPONSE
     const book: Book = await response.json();
 
-    // if (!bookDetail) return;
     if (!bookDetail) {
-         showError("Book detail container not found in HTML.");
-    return;
+      showError("Book detail container not found in HTML.");
+      return;
     }
 
-   // BOOK TITLE
+    // TITLE
     const heading = document.createElement("h1");
     heading.textContent = book.title;
 
-    // BOOK ISBN
-    const isbnText = document.createElement("p");
-    isbnText.textContent = `ISBN: ${book.isbn}`;
+    const elements: HTMLElement[] = [heading];
 
-    // BOOK AUTHOR
+    // SUBTITLE (OPTIONAL)
+    if (book.subtitle) {
+      const subtitle = document.createElement("p");
+      subtitle.textContent = book.subtitle;
+      elements.push(subtitle);
+    }
+
+    // COVER (OPTIONAL)
+    if (book.cover) {
+      const cover = document.createElement("img");
+      cover.src = book.cover;
+      cover.alt = `Cover of ${book.title}`;
+      cover.classList.add("book-cover");
+      elements.push(cover);
+    }
+
+    // ABSTRACT (OPTIONAL)
+    if (book.abstract) {
+      const abstractHeading = document.createElement("h2");
+      abstractHeading.textContent = "Abstract";
+
+      const abstract = document.createElement("p");
+      abstract.textContent = book.abstract;
+
+      elements.push(abstractHeading, abstract);
+    }
+
+    // AUTHOR
     const author = document.createElement("p");
     author.textContent = `Author: ${book.author}`;
+    elements.push(author);
 
-    // BOOK PUBLISHER
+    // PUBLISHER
     const publisher = document.createElement("p");
     publisher.textContent = `Publisher: ${book.publisher}`;
+    elements.push(publisher);
 
-    // RENDER BOOK DETAILS
-    bookDetail.replaceChildren(
-        heading,
-        isbnText,
-        author,
-        publisher
-    );
-
-  } catch (error: unknown) {
-  console.error("Could not load book details:", error);
-
-  if (error instanceof Error) {
-    showError(error.message);
-  } else {
-    showError("An unexpected error occurred.");
-  }
-}}
-
-// EMPTY PAGE
-function showError(message: string): void {
-  if (!bookDetail) {
-    showError("Book detail container not found in HTML.");
-    return;
+    // NUMBER OF PAGES (OPTIONAL)
+    if (book.numPages !== undefined) {
+      const pages = document.createElement("p");
+      pages.textContent = `Pages: ${book.numPages}`;
+      elements.push(pages);
     }
+
+    // ISBN
+    const isbnText = document.createElement("p");
+    isbnText.textContent = `ISBN: ${book.isbn}`;
+    elements.push(isbnText);
+
+    // RENDER ALL BOOK DETAILS
+    bookDetail.replaceChildren(...elements);
+  } catch (error: unknown) {
+    console.error("Could not load book details:", error);
+
+    if (error instanceof Error) {
+      showError(error.message);
+    } else {
+      showError("An unexpected error occurred.");
+    }
+  }
 }
 
+// DISPLAY ERROR MESSAGE
+function showError(message: string): void {
+  if (!detailError) return;
+
+  detailError.textContent = message;
+  detailError.hidden = false;
+}
+
+// START
 initDetail();

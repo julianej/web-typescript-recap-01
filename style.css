@@ -55,3 +55,12 @@ main .fav-btn {
 .first-col {
   width: 5%;
 }
+
+.book-cover {
+  display: block;
+  width: 100%;
+  max-width: 240px;
+  height: auto;
+  margin: 2rem 0;
+  object-fit: contain;
+}
