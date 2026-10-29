@@ -26,9 +26,11 @@ function createFavoriteButton(book) {
             : `Add ${book.title} to favorites`);
         button.setAttribute("aria-pressed", String(favorite));
     }
+    // CLICK HANDLER
     button.addEventListener("click", () => {
         toggleFavorite(book);
         updateButton();
+        updateFavoriteCount();
     });
     updateButton();
     return button;
@@ -130,9 +132,9 @@ function populatePublishers(books) {
 // FAVOURITE COUNT HEART
 const favoriteCount = document.querySelector("#favorite-count");
 function updateFavoriteCount() {
-    if (favoriteCount) {
-        favoriteCount.textContent = String(getFavorites().length);
-    }
+    if (!favoriteCount)
+        return;
+    favoriteCount.textContent = String(getFavorites().length);
 }
 updateFavoriteCount();
 // OUTSIDE event Listener

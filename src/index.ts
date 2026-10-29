@@ -43,10 +43,12 @@ function createFavoriteButton(book: Book): HTMLButtonElement {
     button.setAttribute("aria-pressed", String(favorite));
   }
 
-  button.addEventListener("click", () => {
+  // CLICK HANDLER
+    button.addEventListener("click", () => {
     toggleFavorite(book);
     updateButton();
-  });
+    updateFavoriteCount();
+    });
 
   updateButton();
 
@@ -187,12 +189,14 @@ function populatePublishers(books: Book[]): void {
 
 // < ------------------------->
 // FAVOURITE COUNT HEART
+
 const favoriteCount = document.querySelector<HTMLElement>("#favorite-count");
 
 function updateFavoriteCount(): void {
-  if (favoriteCount) {
-    favoriteCount.textContent = String(getFavorites().length);
-  }
+  if (!favoriteCount) return;
+
+  favoriteCount.textContent = String(getFavorites().length);
+  
 }
 
 updateFavoriteCount();
