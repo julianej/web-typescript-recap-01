@@ -45,7 +45,7 @@ async function init(): Promise<void> {
   if (bookCount) {
     bookCount.textContent = "Books could not be loaded";
   }
-}
+}}
 
 init();
 // < ------------------------->
@@ -53,7 +53,7 @@ init();
 // DYNAMIC BOOK LIST UPDATE empty
 // function definition renderBooks ()
 // event listener detects typing and calls
-export function renderBooks(): void {
+function renderBooks(): void {
     console.log("Search value:", bookSearch?.value);
 
   if (!bookList || !bookCount) return;
