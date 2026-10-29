@@ -1,14 +1,11 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.fetchBooks = fetchBooks;
-const types_js_1 = require("./types.js");
+import { isBook } from "./types.js";
 const data = {
     title: "Example Book",
     isbn: "1234567890",
     author: "Jane Doe",
     publisher: "Example Publishing",
 };
-if ((0, types_js_1.isBook)(data)) {
+if (isBook(data)) {
     const book = data;
     console.log(book.title);
 }
@@ -16,7 +13,7 @@ if ((0, types_js_1.isBook)(data)) {
 // fetch BOOKS API 
 const API_URL = "http://localhost:4730";
 // A function fetchBooks(): Promise<Book[]> 
-async function fetchBooks() {
+export async function fetchBooks() {
     const response = await fetch(`${API_URL}/books`);
     // that checks response.ok 
     if (!response.ok) {
@@ -27,6 +24,6 @@ async function fetchBooks() {
         throw new Error("Invalid API response: expected an array of books");
     }
     // and returns only valid books
-    return data.filter(types_js_1.isBook);
+    return data.filter(isBook);
 }
 //# sourceMappingURL=books.js.map

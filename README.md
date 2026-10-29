@@ -165,6 +165,12 @@ Open the local URL printed by `http-server` in your browser to test the applicat
 <br>
 
 ### TASK 02 - Book Listing
-- check index.html for list
-- add an id <tbody id="book-list">
+- check index.html for ids
+- <input type="text" id="search" />
 - <h2 id="book-count">0 Books displayed</h2>
+- <select id="by-publisher"><option value="-">All publishers</option></select>
+- <table><tbody id="book-list"></tbody></table>
+
+- write logic and compile with `npx tsc`
+- restart `npx http-server -c-1`
+- check console.log output

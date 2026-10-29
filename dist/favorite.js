@@ -1,4 +1,3 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 console.log("Favorite Page loaded");
+export {};
 //# sourceMappingURL=favorite.js.map
