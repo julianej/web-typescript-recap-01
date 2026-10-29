@@ -1,2 +1,2 @@
-export declare function renderBooks(): void;
+export {};
 //# sourceMappingURL=index.d.ts.map

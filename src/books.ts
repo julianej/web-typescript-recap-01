@@ -19,8 +19,8 @@ const API_URL = "http://localhost:4730";
 export async function fetchBooks(): Promise<Book[]> {
   const response = await fetch(`${API_URL}/books`);
 // that checks response.ok 
-  if (!response.ok) {
-    throw new Error(`Failed to fetch books: ${response.status}`);
+   if (!response.ok) {
+    throw new Error(`API error: ${response.status}`);
   }
 
   const data: unknown = await response.json();

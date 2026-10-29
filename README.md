@@ -174,3 +174,4 @@ Open the local URL printed by `http-server` in your browser to test the applicat
 - write logic and compile with `npx tsc`
 - restart `npx http-server -c-1`
 - check console.log output
+- stop API connect `npx bookmonkey-api@4`Press Ctrl + C to stop the server.
