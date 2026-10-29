@@ -12,11 +12,57 @@ TypeScript: Logic and type safety; source code in src/, compiled to dist/
 bookmonkey-api: REST API serving as the data source for the books
 Git & GitHub: Version control, feature branches, and pull requests
 
-### Getting Started
-01 Clone the repository
-02 Run npm init -y  (package.json) listed under devDependencies in your package.json
-03 Run npm install --save -dev typescript (adds TypeScript to devDependencies)
-04 Run npm install (Installs the required npm packages into node_modules.)
-05 Run npx tsc --init (tsconfic.json)
-06 Run node dist/index.js to compile to dist/
-07 Open index.html in your browser
+# TypeScript Project Setup
+
+## 1. Initialize npm
+
+Creates a `package.json` file to manage project metadata and dependencies.
+
+```bash
+npm init -y
+```
+
+## 2. Install TypeScript
+
+Installs TypeScript as a development dependency and updates `package.json` and `package-lock.json`.
+
+```bash
+npm install --save-dev typescript
+```
+
+## 3. Verify the TypeScript installation
+
+Checks the installed TypeScript compiler version.
+
+```bash
+npx tsc --version
+```
+
+## 4. Initialize TypeScript configuration
+
+Creates a `tsconfig.json` file to configure the TypeScript compiler.
+
+```bash
+npx tsc --init
+```
+
+## 5. Install project dependencies (if needed)
+
+Installs all dependencies listed in `package.json`. This step is usually unnecessary immediately after step 2 because npm has already installed TypeScript.
+
+```bash
+npm install
+```
+
+## Summary
+
+Run these commands in order:
+
+```bash
+npm init -y
+npm install --save-dev typescript
+npx tsc --version
+npx tsc --init
+```
+
+**Result:** Your project has a `package.json`, TypeScript installed as a development dependency, and a `tsconfig.json` configuration file.
