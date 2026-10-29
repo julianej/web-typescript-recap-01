@@ -7,8 +7,33 @@ const favoritesHeading = document.querySelector("#favorites-heading");
 const searchInput = document.querySelector("#search");
 const publisherFilter = document.querySelector("#by-publisher");
 const favoritesCount = document.querySelector(".mainnav-number");
-// ISBN  
-function getFavoriteIsbns() {
+export function getFavorites() {
+    try {
+        const data = JSON.parse(localStorage.getItem(FAVORITES_KEY) ?? "[]");
+        if (Array.isArray(data) &&
+            data.every((isbn) => typeof isbn === "string")) {
+            return data;
+        }
+        return [];
+    }
+    catch {
+        return [];
+    }
+}
+export function isFavorite(book) {
+    return getFavorites().includes(book.isbn);
+}
+export function toggleFavorite(book) {
+    const favorites = getFavorites();
+    const alreadyFavorite = favorites.includes(book.isbn);
+    const updatedFavorites = alreadyFavorite
+        ? favorites.filter((isbn) => isbn !== book.isbn)
+        : [...favorites, book.isbn];
+    localStorage.setItem(FAVORITES_KEY, JSON.stringify(updatedFavorites));
+    return !alreadyFavorite;
+}
+// ISBN JSON PARSE 
+export function getFavoriteIsbns() {
     try {
         const stored = JSON.parse(localStorage.getItem(FAVORITES_KEY) ?? "[]");
         if (Array.isArray(stored) &&
@@ -23,7 +48,7 @@ function getFavoriteIsbns() {
 }
 let favoriteBooks = [];
 // UPDATE
-function updateCount(count) {
+export function updateCount(count) {
     if (favoritesHeading) {
         favoritesHeading.textContent =
             `${count} Favorite${count === 1 ? "" : "s"} on your list`;
@@ -33,7 +58,7 @@ function updateCount(count) {
     }
 }
 // RENDER
-function renderFavorites() {
+export function renderFavorites() {
     if (!favoritesList)
         return;
     const searchTerm = searchInput?.value.trim().toLowerCase() ?? "";

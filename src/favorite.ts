@@ -23,8 +23,45 @@ const publisherFilter =
 const favoritesCount =
   document.querySelector<HTMLElement>(".mainnav-number");
 
-// ISBN  
-function getFavoriteIsbns(): string[] {
+
+export function getFavorites(): string[] {
+  try {
+    const data: unknown = JSON.parse(
+      localStorage.getItem(FAVORITES_KEY) ?? "[]"
+    );
+
+    if (
+      Array.isArray(data) &&
+      data.every((isbn: unknown) => typeof isbn === "string")
+    ) {
+      return data;
+    }
+
+    return [];
+  } catch {
+    return [];
+  }
+}
+
+export function isFavorite(book: Book): boolean {
+  return getFavorites().includes(book.isbn);
+}
+
+export function toggleFavorite(book: Book): boolean {
+  const favorites = getFavorites();
+  const alreadyFavorite = favorites.includes(book.isbn);
+
+  const updatedFavorites = alreadyFavorite
+    ? favorites.filter((isbn) => isbn !== book.isbn)
+    : [...favorites, book.isbn];
+
+  localStorage.setItem(FAVORITES_KEY, JSON.stringify(updatedFavorites));
+
+  return !alreadyFavorite;
+}  
+
+// ISBN JSON PARSE 
+export function getFavoriteIsbns(): string[] {
   try {
     const stored: unknown = JSON.parse(
       localStorage.getItem(FAVORITES_KEY) ?? "[]"
@@ -46,7 +83,7 @@ function getFavoriteIsbns(): string[] {
 let favoriteBooks: Book[] = [];
 
 // UPDATE
-function updateCount(count: number): void {
+export function updateCount(count: number): void {
   if (favoritesHeading) {
     favoritesHeading.textContent =
       `${count} Favorite${count === 1 ? "" : "s"} on your list`;
@@ -58,7 +95,7 @@ function updateCount(count: number): void {
 }
 
 // RENDER
-function renderFavorites(): void {
+export function renderFavorites(): void {
   if (!favoritesList) return;
 
   const searchTerm = searchInput?.value.trim().toLowerCase() ?? "";
