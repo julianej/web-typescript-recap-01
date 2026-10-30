@@ -2,27 +2,32 @@
 console.log("Favorite Page loaded");
 import { fetchBooks } from "./books.js";
 const FAVORITES_KEY = "favoriteBooks";
+// SELECT HTML ELEMENTS
 const favoritesList = document.querySelector("#favorites-list");
 const favoritesHeading = document.querySelector("#favorites-heading");
 const searchInput = document.querySelector("#search");
 const publisherFilter = document.querySelector("#by-publisher");
 const favoritesCount = document.querySelector(".mainnav-number");
+// TYPE GUARD
+function isStringArray(value) {
+    return (Array.isArray(value) &&
+        value.every((isbn) => typeof isbn === "string"));
+}
+// READ FAVORITES FROM LOCAL STORAGE
 export function getFavorites() {
     try {
-        const data = JSON.parse(localStorage.getItem(FAVORITES_KEY) ?? "[]");
-        if (Array.isArray(data) &&
-            data.every((isbn) => typeof isbn === "string")) {
-            return data;
-        }
-        return [];
+        const stored = JSON.parse(localStorage.getItem(FAVORITES_KEY) ?? "[]");
+        return isStringArray(stored) ? stored : [];
     }
     catch {
         return [];
     }
 }
+// CHECK IF BOOK IS FAVORITE
 export function isFavorite(book) {
     return getFavorites().includes(book.isbn);
 }
+// ADD OR REMOVE FAVORITE
 export function toggleFavorite(book) {
     const favorites = getFavorites();
     const alreadyFavorite = favorites.includes(book.isbn);
@@ -32,22 +37,9 @@ export function toggleFavorite(book) {
     localStorage.setItem(FAVORITES_KEY, JSON.stringify(updatedFavorites));
     return !alreadyFavorite;
 }
-// ISBN JSON PARSE 
-export function getFavoriteIsbns() {
-    try {
-        const stored = JSON.parse(localStorage.getItem(FAVORITES_KEY) ?? "[]");
-        if (Array.isArray(stored) &&
-            stored.every((isbn) => typeof isbn === "string")) {
-            return stored;
-        }
-        return [];
-    }
-    catch {
-        return [];
-    }
-}
+// STORE FAVORITE BOOKS
 let favoriteBooks = [];
-// UPDATE
+// UPDATE FAVORITE COUNT
 export function updateCount(count) {
     if (favoritesHeading) {
         favoritesHeading.textContent =
@@ -57,7 +49,7 @@ export function updateCount(count) {
         favoritesCount.textContent = String(count);
     }
 }
-// RENDER
+// RENDER FAVORITES
 export function renderFavorites() {
     if (!favoritesList)
         return;
@@ -72,7 +64,7 @@ export function renderFavorites() {
         return matchesSearch && matchesPublisher;
     });
     favoritesList.replaceChildren();
-    // NOTHING IN LIST
+    // EMPTY FAVORITES OR NO SEARCH RESULTS
     if (filteredBooks.length === 0) {
         const row = document.createElement("tr");
         const cell = document.createElement("td");
@@ -85,9 +77,10 @@ export function renderFavorites() {
         favoritesList.append(row);
         return;
     }
+    // CREATE BOOK ROWS
     filteredBooks.forEach((book) => {
         const row = document.createElement("tr");
-        // Remove favorite button
+        // REMOVE FAVORITE BUTTON
         const favoriteCell = document.createElement("td");
         const removeButton = document.createElement("button");
         removeButton.className = "button button-clear fav-btn";
@@ -95,34 +88,39 @@ export function renderFavorites() {
         removeButton.setAttribute("aria-label", `Remove ${book.title} from favorites`);
         removeButton.textContent = "×";
         removeButton.addEventListener("click", () => {
-            const updatedIsbns = getFavoriteIsbns().filter((isbn) => isbn !== book.isbn);
-            localStorage.setItem(FAVORITES_KEY, JSON.stringify(updatedIsbns));
+            const updatedFavorites = getFavorites().filter((isbn) => isbn !== book.isbn);
+            localStorage.setItem(FAVORITES_KEY, JSON.stringify(updatedFavorites));
             favoriteBooks = favoriteBooks.filter((favorite) => favorite.isbn !== book.isbn);
             updateCount(favoriteBooks.length);
             renderFavorites();
         });
         favoriteCell.append(removeButton);
-        // Book information
+        // BOOK TITLE
         const titleCell = document.createElement("td");
         titleCell.textContent = book.title;
+        // ISBN
         const isbnCell = document.createElement("td");
         isbnCell.textContent = book.isbn;
+        // AUTHOR
         const authorCell = document.createElement("td");
         authorCell.textContent = book.author;
+        // PUBLISHER
         const publisherCell = document.createElement("td");
         publisherCell.textContent = book.publisher;
-        // Detail link
+        // DETAIL LINK
         const detailCell = document.createElement("td");
         const detailLink = document.createElement("a");
-        detailLink.href = `detail.html?isbn=${encodeURIComponent(book.isbn)}`;
+        detailLink.href =
+            `detail.html?isbn=${encodeURIComponent(book.isbn)}`;
         detailLink.className = "button";
         detailLink.textContent = "Detail";
         detailCell.append(detailLink);
+        // APPEND CELLS
         row.append(favoriteCell, titleCell, isbnCell, authorCell, publisherCell, detailCell);
         favoritesList.append(row);
     });
 }
-// INITIALISE
+// INITIALIZE FAVORITES PAGE
 async function initFavorites() {
     if (!favoritesList) {
         console.error("Favorites table body not found.");
@@ -130,7 +128,7 @@ async function initFavorites() {
     }
     try {
         const books = await fetchBooks();
-        const favoriteIsbns = getFavoriteIsbns();
+        const favoriteIsbns = getFavorites();
         favoriteBooks = books.filter((book) => favoriteIsbns.includes(book.isbn));
         updateCount(favoriteBooks.length);
         renderFavorites();
@@ -141,18 +139,21 @@ async function initFavorites() {
         const row = document.createElement("tr");
         const cell = document.createElement("td");
         cell.colSpan = 6;
-        cell.textContent = "Could not load books. Please try again.";
+        cell.textContent =
+            "Could not load books. Please try again.";
         row.append(cell);
         favoritesList.append(row);
     }
 }
+// SEARCH AND FILTER EVENTS
 searchInput?.addEventListener("input", renderFavorites);
 publisherFilter?.addEventListener("change", renderFavorites);
-// Prevent the search and filter forms from reloading the page.
+// PREVENT FORM RELOAD
 document.querySelectorAll("form").forEach((form) => {
     form.addEventListener("submit", (event) => {
         event.preventDefault();
     });
 });
+// START
 initFavorites();
 //# sourceMappingURL=favorite.js.map

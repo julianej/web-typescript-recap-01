@@ -1,13 +1,14 @@
+
 // src/favorite.ts
 
-
-console.log("Favorite Page loaded")
+console.log("Favorite Page loaded");
 
 import { fetchBooks } from "./books.js";
 import type { Book } from "./types.js";
 
 const FAVORITES_KEY = "favoriteBooks";
 
+// SELECT HTML ELEMENTS
 const favoritesList =
   document.querySelector<HTMLTableSectionElement>("#favorites-list");
 
@@ -23,30 +24,33 @@ const publisherFilter =
 const favoritesCount =
   document.querySelector<HTMLElement>(".mainnav-number");
 
+// TYPE GUARD
+function isStringArray(value: unknown): value is string[] {
+  return (
+    Array.isArray(value) &&
+    value.every((isbn: unknown) => typeof isbn === "string")
+  );
+}
 
+// READ FAVORITES FROM LOCAL STORAGE
 export function getFavorites(): string[] {
   try {
-    const data: unknown = JSON.parse(
+    const stored: unknown = JSON.parse(
       localStorage.getItem(FAVORITES_KEY) ?? "[]"
     );
 
-    if (
-      Array.isArray(data) &&
-      data.every((isbn: unknown) => typeof isbn === "string")
-    ) {
-      return data;
-    }
-
-    return [];
+    return isStringArray(stored) ? stored : [];
   } catch {
     return [];
   }
 }
 
+// CHECK IF BOOK IS FAVORITE
 export function isFavorite(book: Book): boolean {
   return getFavorites().includes(book.isbn);
 }
 
+// ADD OR REMOVE FAVORITE
 export function toggleFavorite(book: Book): boolean {
   const favorites = getFavorites();
   const alreadyFavorite = favorites.includes(book.isbn);
@@ -55,34 +59,18 @@ export function toggleFavorite(book: Book): boolean {
     ? favorites.filter((isbn) => isbn !== book.isbn)
     : [...favorites, book.isbn];
 
-  localStorage.setItem(FAVORITES_KEY, JSON.stringify(updatedFavorites));
+  localStorage.setItem(
+    FAVORITES_KEY,
+    JSON.stringify(updatedFavorites)
+  );
 
   return !alreadyFavorite;
-}  
-
-// ISBN JSON PARSE 
-export function getFavoriteIsbns(): string[] {
-  try {
-    const stored: unknown = JSON.parse(
-      localStorage.getItem(FAVORITES_KEY) ?? "[]"
-    );
-
-    if (
-      Array.isArray(stored) &&
-      stored.every((isbn: unknown) => typeof isbn === "string")
-    ) {
-      return stored;
-    }
-
-    return [];
-  } catch {
-    return [];
-  }
 }
 
+// STORE FAVORITE BOOKS
 let favoriteBooks: Book[] = [];
 
-// UPDATE
+// UPDATE FAVORITE COUNT
 export function updateCount(count: number): void {
   if (favoritesHeading) {
     favoritesHeading.textContent =
@@ -94,12 +82,15 @@ export function updateCount(count: number): void {
   }
 }
 
-// RENDER
+// RENDER FAVORITES
 export function renderFavorites(): void {
   if (!favoritesList) return;
 
-  const searchTerm = searchInput?.value.trim().toLowerCase() ?? "";
-  const selectedPublisher = publisherFilter?.value ?? "-";
+  const searchTerm =
+    searchInput?.value.trim().toLowerCase() ?? "";
+
+  const selectedPublisher =
+    publisherFilter?.value ?? "-";
 
   const filteredBooks = favoriteBooks.filter((book) => {
     const matchesSearch =
@@ -116,12 +107,13 @@ export function renderFavorites(): void {
 
   favoritesList.replaceChildren();
 
-  // NOTHING IN LIST
+  // EMPTY FAVORITES OR NO SEARCH RESULTS
   if (filteredBooks.length === 0) {
     const row = document.createElement("tr");
     const cell = document.createElement("td");
 
     cell.colSpan = 6;
+
     cell.textContent =
       favoriteBooks.length === 0
         ? "You haven't added any favorites yet."
@@ -129,32 +121,36 @@ export function renderFavorites(): void {
 
     row.append(cell);
     favoritesList.append(row);
+
     return;
   }
 
+  // CREATE BOOK ROWS
   filteredBooks.forEach((book) => {
     const row = document.createElement("tr");
 
-    // Remove favorite button
+    // REMOVE FAVORITE BUTTON
     const favoriteCell = document.createElement("td");
     const removeButton = document.createElement("button");
 
     removeButton.className = "button button-clear fav-btn";
     removeButton.type = "button";
+
     removeButton.setAttribute(
       "aria-label",
       `Remove ${book.title} from favorites`
     );
+
     removeButton.textContent = "×";
 
     removeButton.addEventListener("click", () => {
-      const updatedIsbns = getFavoriteIsbns().filter(
+      const updatedFavorites = getFavorites().filter(
         (isbn) => isbn !== book.isbn
       );
 
       localStorage.setItem(
         FAVORITES_KEY,
-        JSON.stringify(updatedIsbns)
+        JSON.stringify(updatedFavorites)
       );
 
       favoriteBooks = favoriteBooks.filter(
@@ -167,29 +163,35 @@ export function renderFavorites(): void {
 
     favoriteCell.append(removeButton);
 
-    // Book information
+    // BOOK TITLE
     const titleCell = document.createElement("td");
     titleCell.textContent = book.title;
 
+    // ISBN
     const isbnCell = document.createElement("td");
     isbnCell.textContent = book.isbn;
 
+    // AUTHOR
     const authorCell = document.createElement("td");
     authorCell.textContent = book.author;
 
+    // PUBLISHER
     const publisherCell = document.createElement("td");
     publisherCell.textContent = book.publisher;
 
-    // Detail link
+    // DETAIL LINK
     const detailCell = document.createElement("td");
     const detailLink = document.createElement("a");
 
-    detailLink.href = `detail.html?isbn=${encodeURIComponent(book.isbn)}`;
+    detailLink.href =
+      `detail.html?isbn=${encodeURIComponent(book.isbn)}`;
+
     detailLink.className = "button";
     detailLink.textContent = "Detail";
 
     detailCell.append(detailLink);
 
+    // APPEND CELLS
     row.append(
       favoriteCell,
       titleCell,
@@ -203,7 +205,7 @@ export function renderFavorites(): void {
   });
 }
 
-// INITIALISE
+// INITIALIZE FAVORITES PAGE
 async function initFavorites(): Promise<void> {
   if (!favoritesList) {
     console.error("Favorites table body not found.");
@@ -212,7 +214,7 @@ async function initFavorites(): Promise<void> {
 
   try {
     const books = await fetchBooks();
-    const favoriteIsbns = getFavoriteIsbns();
+    const favoriteIsbns = getFavorites();
 
     favoriteBooks = books.filter((book) =>
       favoriteIsbns.includes(book.isbn)
@@ -220,7 +222,8 @@ async function initFavorites(): Promise<void> {
 
     updateCount(favoriteBooks.length);
     renderFavorites();
-  } catch (error) {
+
+  } catch (error: unknown) {
     console.error("Failed to load favorites:", error);
 
     favoritesList.replaceChildren();
@@ -229,21 +232,25 @@ async function initFavorites(): Promise<void> {
     const cell = document.createElement("td");
 
     cell.colSpan = 6;
-    cell.textContent = "Could not load books. Please try again.";
+    cell.textContent =
+      "Could not load books. Please try again.";
 
     row.append(cell);
     favoritesList.append(row);
   }
 }
 
+// SEARCH AND FILTER EVENTS
 searchInput?.addEventListener("input", renderFavorites);
+
 publisherFilter?.addEventListener("change", renderFavorites);
 
-// Prevent the search and filter forms from reloading the page.
+// PREVENT FORM RELOAD
 document.querySelectorAll("form").forEach((form) => {
   form.addEventListener("submit", (event) => {
     event.preventDefault();
   });
 });
 
+// START
 initFavorites();
