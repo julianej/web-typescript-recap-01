@@ -1,16 +1,20 @@
+
+// TESTING DATA
+// const data: unknown = {
+//   title: "Example Book",
+//   isbn: "1234567890",
+//   author: "Jane Doe",
+//   publisher: "Example Publishing",
+// };
+
+// if (isBook(data)) {
+//   const book: Book = data;
+//   console.log(book.title);
+// }
+
 import { isBook, type Book } from "./types.js";
 
-const data: unknown = {
-  title: "Example Book",
-  isbn: "1234567890",
-  author: "Jane Doe",
-  publisher: "Example Publishing",
-};
 
-if (isBook(data)) {
-  const book: Book = data;
-  console.log(book.title);
-}
 // BOOK LISTING
 // fetch BOOKS API 
 const API_URL = "http://localhost:4730";

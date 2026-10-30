@@ -1,6 +1,9 @@
 console.log("Index Page loaded");
 // DATA FETCH
 import { fetchBooks } from "./books.js";
+import { isFavorite, toggleFavorite } from "./favorite.js";
+import { getFavorites } from "./favorite.js";
+// 2. SELECT HTML ELEMENTS
 // SEARCH //lib DOM selectors 
 const bookSearch = document.querySelector("#search");
 const publisherFilter = document.querySelector("#by-publisher");
@@ -10,6 +13,28 @@ const errorMessage = document.querySelector("#error-message");
 // create a new ARRAY of filtered Books from Interface
 // books fetched from the API.
 let allBooks = [];
+// 3. CREATE FAVORITE BUTTON — PUT IT HERE
+function createFavoriteButton(book) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "button button-clear fav-btn";
+    function updateButton() {
+        const favorite = isFavorite(book);
+        button.textContent = favorite ? "♥" : "♡";
+        button.setAttribute("aria-label", favorite
+            ? `Remove ${book.title} from favorites`
+            : `Add ${book.title} to favorites`);
+        button.setAttribute("aria-pressed", String(favorite));
+    }
+    // CLICK HANDLER
+    button.addEventListener("click", () => {
+        toggleFavorite(book);
+        updateButton();
+        updateFavoriteCount();
+    });
+    updateButton();
+    return button;
+}
 // < ------------------------->
 // ASYNC fetch them all before render
 async function init() {
@@ -40,8 +65,13 @@ init();
 // event listener detects typing and calls
 function renderBooks() {
     console.log("Search value:", bookSearch?.value);
-    if (!bookList || !bookCount)
+    if (!bookList || !bookCount) {
+        console.error("Missing HTML element:", {
+            bookList,
+            bookCount,
+        });
         return;
+    }
     // 1. Get the current filter values
     const searchTerm = bookSearch?.value.trim().toLowerCase() ?? "";
     const selectedPublisher = publisherFilter?.value ?? "-";
@@ -63,6 +93,9 @@ function renderBooks() {
     bookList.replaceChildren();
     filteredBooks.forEach((book) => {
         const row = document.createElement("tr");
+        // FAVORITE BUTTON
+        const favoriteCell = document.createElement("td");
+        favoriteCell.append(createFavoriteButton(book));
         const titleCell = document.createElement("td");
         titleCell.textContent = book.title;
         const isbnCell = document.createElement("td");
@@ -78,7 +111,7 @@ function renderBooks() {
         authorCell.textContent = book.author;
         const publisherCell = document.createElement("td");
         publisherCell.textContent = book.publisher;
-        row.append(titleCell, isbnCell, authorCell, publisherCell, detailCell);
+        row.append(favoriteCell, titleCell, isbnCell, authorCell, publisherCell, detailCell);
         bookList.append(row);
     });
 }
@@ -95,6 +128,15 @@ function populatePublishers(books) {
         publisherFilter.add(new Option(publisher, publisher));
     });
 }
+// < ------------------------->
+// FAVOURITE COUNT HEART
+const favoriteCount = document.querySelector("#favorite-count");
+function updateFavoriteCount() {
+    if (!favoriteCount)
+        return;
+    favoriteCount.textContent = String(getFavorites().length);
+}
+updateFavoriteCount();
 // OUTSIDE event Listener
 bookSearch?.addEventListener("input", renderBooks);
 publisherFilter?.addEventListener("change", renderBooks);
