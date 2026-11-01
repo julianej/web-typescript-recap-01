@@ -1,5 +1,5 @@
 :root {
-  --primary: #9b4dca;
+  --primary: #0e0e0e;
   --secondary: #606c76;
 }
 
@@ -148,7 +148,7 @@ main .fav-btn {
 #book-detail .book-subtitle {
   grid-column: 2;
   margin: 0 0 2.5rem;
-  color: #666;
+  color: var(--primary);
   font-size: 1.8rem;
   line-height: 1.5;
 }
@@ -195,11 +195,29 @@ main .fav-btn {
 }
 
 #book-detail .book-meta dt {
-  color: #777;
+  color: var(--primary);
 }
 
 #book-detail .book-meta dd {
   font-weight: 500;
+}
+
+.button {
+    background-color: var(--primary);
+}
+
+.button.button-clear, button.button-clear, input[type='button'].button-clear, input[type='reset'].button-clear, input[type='submit'].button-clear {
+    background-color: transparent;
+    border-color: transparent;
+    color: #000000;}
+
+input[type='button'].button-clear, input[type='reset'].button-clear, input[type='submit'].button-clear {
+    background-color: var(--primary);
+}
+
+
+.button.button-clear:focus, .button.button-clear:hover, button.button-clear:focus, button.button-clear:hover, input[type='button'].button-clear:focus, input[type='button'].button-clear:hover, input[type='reset'].button-clear:focus, input[type='reset'].button-clear:hover, input[type='submit'].button-clear:focus, input[type='submit'].button-clear:hover {
+    background-color: var(--primary);
 }
 
 /* Back button */
@@ -209,7 +227,7 @@ main .fav-btn {
   margin: 1.5rem 0 2rem;
   padding: 0.8rem 1.2rem;
   background: transparent;
-  color: #000;
+  color: var(--primary);
   border: 1px solid #000;
   border-radius: 0;
   font-size: 1.2rem;
